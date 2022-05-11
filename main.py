@@ -44,6 +44,20 @@ def read_file(file_name):
 def solve(black, yellow, green):
     words = read_file('data-files/english3.txt')
     possible_words = []
+    if(len(green) >= 10):
+        last_row = green[-10:]
+        j = 1
+        answer = ''
+        correct = True
+        for i in range(5):
+            if(str(i+1) != last_row[j]):
+                correct = False
+                break
+            j = j + 2
+        if correct:
+            for e in last_row[0::2]:
+                answer += e
+            return ["[SOLVED] (was " + answer + ")"]
     for i in range(len(words)):
         word = words[i]
         if len(word) != 5:
@@ -82,16 +96,28 @@ def solve(black, yellow, green):
                     break
         if canidate:
             possible_words.append(word)
+    
     return possible_words
 
 def print_results(Boxes):
+    pq = []
+    solved_pq = []
     for key in Boxes:
         data = Boxes[key]
         key = "0" + key if int(key) < 10 else key
         words = solve(data["blacks"], data["yellows"], data["greens"])
-        print("[" + key + "] -> " + ', '.join(words))
+        if("SOLVED" in ''.join(words)):
+            solved_pq.append("[" + key + "] -> " + ', '.join(words))
+        else:
+            pq.append("[" + key + "] -> " + ', '.join(words))
+    
+    pq.sort(reverse=True, key=len)
+    solved_pq.sort(reverse=True)
+    print("\n".join(solved_pq))
+    print("\n".join(pq))
 
 def main():
+    
     print_results(get_boxes())
 
 main()
